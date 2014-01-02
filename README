@@ -1,0 +1,3 @@
+This project contains the code for Kismet gameplay and 
+an attempt to produce an AI for the game. The goal is to 
+calculate probabilities of scores during the game.
