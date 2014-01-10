@@ -1,11 +1,26 @@
 import numpy as np
 
+class ScoreError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
 class row():
-    def __init__(self, rownum, rowtext, rowscore, section):
+    def __init__(self, rownum, rowtext, rowscore, section, isscored):
         self.rownum = rownum
         self.rowtext = rowtext
         self.rowscore = rowscore
         self.section = section
+        self.isscored = isscored
+        return
+
+    def score_row(self, score):
+        if not self.isscored:
+            self.rowscore = score 
+            self.isscored = True
+        else:
+            raise ScoreError("Row Already Scored!!!")    
         return
 
 class scorecard():
@@ -13,25 +28,25 @@ class scorecard():
         self.player_name = name
         self.scores = {}
         
-        scores = [('ones', (1,'ones', 0, 'top')), 
-                  ('twos', (2,'twos', 0, 'top')),
-                  ('threes', (3,'threes', 0, 'top')), 
-                  ('fours', (4,'fours', 0, 'top')),
-                  ('fives', (5,'fives', 0, 'top')), 
-                  ('sixes', (6,'sixes', 0, 'top')),
-                  ('top_bonus',(7,'top bonus',0,'none')), 
-                  ('top_total',(8, 'top total', 0,'none')),
-                  ('tp_sc',(9,'two pair, same color',0, 'bottom')), 
-                  ('three_kind',(10, 'three of a kind', 0, 'bottom')),
-                  ('straight',(11,'straight',0, 'bottom')), 
-                  ('flush',(12, 'flush', 0, 'bottom')),
-                  ('full_house',(13,'full_house',0, 'bottom')), 
-                  ('fh_sc',(14, 'full_house, same color', 0, 'bottom')),
-                  ('four_kind',(15, 'four of a kind', 0, 'bottom')),
-                  ('scar',(16, 'Yarborough', 0, 'bottom')),
-                  ('kismet',(17, 'Kismet', 0, 'bottom')),
-                  ('bot_total',(18, 'bottom total', 0,'none')),
-                  ('all_total',(19, 'Grand Total', 0,'none'))]
+        scores = [('ones', (1,'ones', 0, 'top',False)), 
+                  ('twos', (2,'twos', 0, 'top',False)),
+                  ('threes', (3,'threes', 0, 'top',False)), 
+                  ('fours', (4,'fours', 0, 'top',False)),
+                  ('fives', (5,'fives', 0, 'top',False)), 
+                  ('sixes', (6,'sixes', 0, 'top',False)),
+                  ('top_bonus',(7,'top bonus',0,'none',False)), 
+                  ('top_total',(8, 'top total', 0,'none',False)),
+                  ('tp_sc',(9,'two pair, same color',0, 'bottom',False)), 
+                  ('three_kind',(10, 'three of a kind', 0, 'bottom',False)),
+                  ('straight',(11,'straight',0, 'bottom',False)), 
+                  ('flush',(12, 'flush', 0, 'bottom',False)),
+                  ('full_house',(13,'full_house',0, 'bottom',False)), 
+                  ('fh_sc',(14, 'full_house, same color', 0, 'bottom',False)),
+                  ('four_kind',(15, 'four of a kind', 0, 'bottom',False)),
+                  ('scar',(16, 'Yarborough', 0, 'bottom',False)),
+                  ('kismet',(17, 'Kismet', 0, 'bottom',False)),
+                  ('bot_total',(18, 'bottom total', 0,'none',False)),
+                  ('all_total',(19, 'Grand Total', 0,'none',False))]
 
         for a in scores:
             self.scores[a[0]]=row(*a[1])
@@ -71,29 +86,24 @@ class scorecard():
                 outstring += "-"*37 +'\n'
         
         outstring += "="*37 +'\n'
-        print outstring
-        return
+        return outstring
     
     def update_score(self, hand, score):
-        self.scores[hand].rowscore = score
-        self.update_tots()
+        try:
+            self.scores[hand].score_row(score)
+            self.update_tots()
+            isgood = True
+        except ScoreError as e:
+            print e.value
+            isgood = False
+        return isgood
+
+    def dump_card(self, filename):
+        outfile = open(filename, 'a')
+        outfile.write(self.print_card())
+        outfile.close()
         return
 
-
-if __name__ == "__main__":
-    alan_score = scorecard("Alan")
-
-    print alan_score.player_name
-    print alan_score.scores.keys()
-    alan_score.print_card()
-
-    alan_score.update_score('ones',10)
-    alan_score.print_card()
-
-    alan_score.update_score('tp_sc',10)
-    alan_score.print_card()
-
-    
 diceart = """ 
  _________     _________     _________     _________     _________
 /         \   /         \   /         \   /         \   /         \     
@@ -111,4 +121,22 @@ def disp_dice(dice_vals):
     print diceart.format(*[dice_dots[a] for a in dice_vals])
     print "Dice values: %s" %(str(dice_vals))
     return
+
+if __name__ == "__main__":
+    alan_score = scorecard("Alan")
+
+    print alan_score.player_name
+    print alan_score.scores.keys()
+    print alan_score.print_card()
+
+    alan_score.update_score('ones',10)
+    print alan_score.print_card()
+
+    alan_score.update_score('tp_sc',10)
+    print alan_score.print_card()
+
+    alan_score.update_score('tp_sc', 50)
+    disp_dice([1,5,3,5,5])
+
+    
 

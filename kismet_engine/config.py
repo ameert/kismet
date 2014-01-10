@@ -68,6 +68,43 @@ def three_kind(hand):
             score += np.sum(numbers)
     return score
 
+def four_kind(hand):
+    score = 0
+    numbers = np.array([a.number for a in hand])
+    counts = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
+    for a in counts:
+        if count >=4:
+            score += np.sum(numbers)+25
+    return score
+
+def kismet(hand):
+    score = 0
+    numbers = np.array([a.number for a in hand])
+    counts = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
+    for a in counts:
+        if count ==5:
+            score += np.sum(numbers) +50
+    return score
+
+def full_house(hand):
+    score = 0
+    numbers = np.array([a.number for a in hand])
+    counts = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
+    if 3 in counts:
+        if 2 in counts:
+            score += np.sum(numbers) +15
+    return score
+
+def fh_sc(hand):
+    score = 0
+    numbers = np.array([a.number for a in hand])
+    counts = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
+    if 3 in counts:
+        if 2 in counts:
+            if flush(hand)==35:
+                score += np.sum(numbers) +20
+    return score
+
 def flush(hand):
     colors = [a.color for a in hand]
     col_count = {'black':0,'green':0,'red':0}
@@ -79,6 +116,19 @@ def flush(hand):
         score = 0
     return score
 
+def tp_sc(hand):
+    score = 0
+    colors = [a.color for a in hand]
+    col_count = {'black':0,'green':0,'red':0}
+    for color in colors:
+        col_count[color]+=1
+    if (4 in col_count.values()) or (5 in col_count.values()):
+        numbers = np.array([a.number for a in hand])
+        counts = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
+        if np.sum(np.where(counts>=2,counts, 0))>=4:
+            score += np.sum(numbers)
+    return score
+        
 def top_bonus(scorecard):
     top_score = 0
     if top_score > 62:
@@ -93,6 +143,10 @@ def top_bonus(scorecard):
         score = 0
     return score
 
+def Yarborough(hand):
+    score = np.sum(np.array([a.number for a in hand]))
+    return score
+    
         
 hand_score = {'ones':count_ones,
               'twos':count_twos,
@@ -101,13 +155,13 @@ hand_score = {'ones':count_ones,
               'fives':count_fives,
               'sixes':count_sixes,
               'top_bonus':top_bonus,
-              'tp_sc':[],
+              'tp_sc':tp_sc,
               'three_kind':three_kind,
               'straight':straight,
               'flush':flush,
-              'full_house':[],
-              'fh_sc':[],
-              'four_kind':[],
-              'scar':[],
-              'kismet':[]
+              'full_house':full_house,
+              'fh_sc':fh_sc,
+              'four_kind':four_kind,
+              'scar':Yarborough,
+              'kismet':kismet
              }
