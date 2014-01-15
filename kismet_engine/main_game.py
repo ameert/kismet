@@ -1,14 +1,17 @@
 from kismet_scorecard import *
-import random as ran
 import os
 from game_funcs import *
 
-seed_size = 42 # number of random bits to pull from the random number generator
-# seed the random number generator
-newseed =os.urandom(seed_size)
-print newseed 
-ran.seed(newseed)
+storefile = './game_records.dat'
 
-
-welcome()
-
+while (1):
+    choice = welcome()
+    if choice == 1:
+        game_info = start_game()
+        game_info = run_game(game_info)
+        if game_info['to_store'] ==1 and game_info['status'] == 0:
+            store_results(game_info, storefile)
+        end_game(game_info)
+    elif choice == 2:
+        exit_game()
+   
