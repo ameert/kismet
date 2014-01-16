@@ -2,6 +2,7 @@ import sys
 import os
 from kismet_scorecard import *
 import random as ran
+from config import *
 
 def exit_game():
     """Ends the game when called"""
@@ -63,10 +64,43 @@ def get_seed():
     newseed =os.urandom(seed_size)
     return newseed
 
+def roll_dice(num_to_roll):
+    """returns a specified number of dice, up to 5"""
+    new_dice = []
+    while len(new_dice)<min([num_to_roll,5]):
+        new_dice.append(ran.choice(dice_set))
+    return new_dice
+
 def run_game(game_info):
     """runs the game"""
     ran.seed(game_info['seed'])
+    
+    while game_info['status']<0:
+        raw_input("Hit enter to roll dice...")
+        roll=1
+        new_hand = False
+        hand_dice = roll_dice(5)
+        while not new_hand:
+            disp_dice([a.number for a in  hand_dice])
+            new_hand, to_keep = keep_or_score(hand_dice, roll, game_info)
+            roll +=1
+            hand_dice = to_keep + roll_dice(5-len(to_keep))
+        print game_info['scorecard'].print_card()
+        if card_full(game_info['scorecard']):
+            game_info['status']=0
     return game_info
+
+def keep_or_score(hand_dice, roll, game_info):
+    """decides what the payer must do given the turn state of the game"""
+    return True, hand_dice
+
+def card_full(player_card):
+    """determines if a players card if full"""
+    full = True
+    for row in player_card.scores.values():
+        if full and not row.isscored:
+            full = False
+    return full
 
 def store_results(game_info, storefile):
     """writes the game info to a file for later analysis"""

@@ -34,8 +34,8 @@ class scorecard():
                   ('fours', (4,'fours', 0, 'top',False)),
                   ('fives', (5,'fives', 0, 'top',False)), 
                   ('sixes', (6,'sixes', 0, 'top',False)),
-                  ('top_bonus',(7,'top bonus',0,'none',False)), 
-                  ('top_total',(8, 'top total', 0,'none',False)),
+                  ('top_bonus',(7,'top bonus',0,'none',True)), 
+                  ('top_total',(8, 'top total', 0,'none',True)),
                   ('tp_sc',(9,'two pair, same color',0, 'bottom',False)), 
                   ('three_kind',(10, 'three of a kind', 0, 'bottom',False)),
                   ('straight',(11,'straight',0, 'bottom',False)), 
@@ -45,8 +45,8 @@ class scorecard():
                   ('four_kind',(15, 'four of a kind', 0, 'bottom',False)),
                   ('scar',(16, 'Yarborough', 0, 'bottom',False)),
                   ('kismet',(17, 'Kismet', 0, 'bottom',False)),
-                  ('bot_total',(18, 'bottom total', 0,'none',False)),
-                  ('all_total',(19, 'Grand Total', 0,'none',False))]
+                  ('bot_total',(18, 'bottom total', 0,'none',True)),
+                  ('all_total',(19, 'Grand Total', 0,'none',True))]
 
         for a in scores:
             self.scores[a[0]]=row(*a[1])
