@@ -92,6 +92,20 @@ def run_game(game_info):
 
 def keep_or_score(hand_dice, roll, game_info):
     """decides what the payer must do given the turn state of the game"""
+    options = score_repor(hand_dice, game_info)
+    if roll<3:
+        options.append(('choose dice and continue rolling', choose_keep))
+    options = dict([a for a in enumerate(options)])
+    print_options(options)
+    choice = -1
+    while choice not in options.keys():
+        print "What is your choice?"
+        choice = raw_input("Enter it now:")
+        if choice not in options.keys():
+            print "Choice not recognized! Try again"
+
+    new_hand, hand_dice = option[choice][1](hand_dice, game_info)
+        
     return True, hand_dice
 
 def card_full(player_card):
