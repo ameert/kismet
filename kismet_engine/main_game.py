@@ -6,7 +6,7 @@ from config import *
 from kismet_scorecard import *
 from game_funcs import *
 
-storefile = './game_records.dat'
+storefile = './data/game_records.dat'
 
 while (1):
     choice = welcome()

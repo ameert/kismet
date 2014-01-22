@@ -2,6 +2,7 @@ import numpy as np
 import sys
 import os
 import random as ran
+import copy
 from config import *
 from kismet_scorecard import *
 
@@ -118,6 +119,27 @@ def keep_or_score(hand_dice, game_info):
         game_info['scorecard'].update_score(options[choice][0],options[choice][2])
     return new_hand, hand_dice
 
+def choose_keepdie(hand_dice):
+    letters = ['a','b','c','d','e']
+    dice_dict = dict(zip(letters,hand_dice))
+    print "Which dice would you like to keep?"
+    for let in letters:
+        print "%s) number: %d color:%s" %(let, dice_dict[let].number,dice_dict[let].color)
+    while (1):
+        choice = raw_input("Enter your choices (%s):" %','.join(letters))
+        to_keep = []
+        for a in choice:
+            if a in letters:
+                to_keep.append(a)
+        print "keep these: %s" %','.join(to_keep)
+        good = True
+        if raw_input("Enter choice [Y]/n:")=='n':
+                good = False
+        if good:
+            break
+    return [dice_dict[key] for key in to_keep]
+            
+
 def print_options(options):
     print "options:"
     for key in sorted(options.keys()):
@@ -152,8 +174,10 @@ def card_full(player_card):
 
 def store_results(game_info, storefile):
     """writes the game info to a file for later analysis"""
-    outfile = open(storefile, 'a')
-    outfile.write(str(game_info)+'\n')
+    outfile = open(storefile, 'ab')
+    new_game_info = copy.deepcopy(game_info)
+    new_game_info['scorecard'] = game_info['scorecard'].print_card()
+    outfile.write(str(new_game_info)+'\n')
     outfile.close()
     return
 
