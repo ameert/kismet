@@ -1,5 +1,9 @@
-from kismet_scorecard import *
+import numpy as np
+import sys
 import os
+import random as ran
+from config import *
+from kismet_scorecard import *
 from game_funcs import *
 
 storefile = './game_records.dat'

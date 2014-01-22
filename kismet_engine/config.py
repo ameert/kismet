@@ -3,6 +3,7 @@
 # the dice and hand info
 #
 ########################
+import numpy as np
 
 dice_vals = {'numbers':[1,2,3,4,5,6],
              'colors':['black','red','green','green','red','black']
@@ -35,20 +36,20 @@ def count_dice(hand, value):
     count = np.sum(np.where(numbers==value,1,0))
     return count
 
-def count_ones(hand):
+def count_ones(hand, game_info):
     return 1*count_dice(hand, 1)
-def count_twos(hand):
+def count_twos(hand, game_info):
     return 2*count_dice(hand, 2)
-def count_threes(hand):
+def count_threes(hand, game_info):
     return 3*count_dice(hand, 3)
-def count_fours(hand):
+def count_fours(hand, game_info):
     return 4*count_dice(hand, 4)
-def count_fives(hand):
+def count_fives(hand, game_info):
     return 5*count_dice(hand, 5)
-def count_sixes(hand):
+def count_sixes(hand, game_info):
     return 6*count_dice(hand, 6)
 
-def straight(hand):
+def straight(hand, game_info):
     numbers = [a.number for a in hand]
     numbers.sort()
     if numbers == [1,2,3,4,5]:
@@ -59,53 +60,53 @@ def straight(hand):
         score = 0
     return score
 
-def three_kind(hand):
+def three_kind(hand, game_info):
     score = 0
     numbers = np.array([a.number for a in hand])
-    counts = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
-    for a in counts:
+    counts, bins = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
+    for count in counts:
         if count >=3:
             score += np.sum(numbers)
     return score
 
-def four_kind(hand):
+def four_kind(hand, game_info):
     score = 0
     numbers = np.array([a.number for a in hand])
-    counts = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
-    for a in counts:
+    counts,bins = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
+    for count in counts:
         if count >=4:
             score += np.sum(numbers)+25
     return score
 
-def kismet(hand):
+def kismet(hand, game_info):
     score = 0
     numbers = np.array([a.number for a in hand])
-    counts = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
-    for a in counts:
+    counts,bins = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
+    for count in counts:
         if count ==5:
             score += np.sum(numbers) +50
     return score
 
-def full_house(hand):
+def full_house(hand, game_info):
     score = 0
     numbers = np.array([a.number for a in hand])
-    counts = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
+    counts,bins = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
     if 3 in counts:
         if 2 in counts:
             score += np.sum(numbers) +15
     return score
 
-def fh_sc(hand):
+def fh_sc(hand, game_info):
     score = 0
     numbers = np.array([a.number for a in hand])
-    counts = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
+    counts,bins = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
     if 3 in counts:
         if 2 in counts:
-            if flush(hand)==35:
+            if flush(hand, game_info)==35:
                 score += np.sum(numbers) +20
     return score
 
-def flush(hand):
+def flush(hand, game_info):
     colors = [a.color for a in hand]
     col_count = {'black':0,'green':0,'red':0}
     for color in colors:
@@ -116,7 +117,7 @@ def flush(hand):
         score = 0
     return score
 
-def tp_sc(hand):
+def tp_sc(hand, game_info):
     score = 0
     colors = [a.color for a in hand]
     col_count = {'black':0,'green':0,'red':0}
@@ -124,7 +125,7 @@ def tp_sc(hand):
         col_count[color]+=1
     if (4 in col_count.values()) or (5 in col_count.values()):
         numbers = np.array([a.number for a in hand])
-        counts = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
+        counts,bins = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
         if np.sum(np.where(counts>=2,counts, 0))>=4:
             score += np.sum(numbers)
     return score
@@ -143,7 +144,7 @@ def top_bonus(scorecard):
         score = 0
     return score
 
-def Yarborough(hand):
+def Yarborough(hand, game_info):
     score = np.sum(np.array([a.number for a in hand]))
     return score
     

@@ -1,4 +1,5 @@
 import numpy as np
+from config import *
 
 class ScoreError(Exception):
     def __init__(self, value):
@@ -78,10 +79,13 @@ class scorecard():
 #           Hand             | Score    
 #####################################
 """.format(name = self.player_name)
-        new_dict = dict([(a.rownum, (a.rowtext,a.rowscore)) for a in self.scores.values()])
+        new_dict = dict([(a.rownum, (a.rowtext,a.rowscore,a.isscored)) for a in self.scores.values()])
         
         for key in new_dict.keys():
-            outstring += "#{0[0]:^28s}|{0[1]:^7d}\n".format(new_dict[key])
+            if new_dict[key][2]:
+                outstring += "#{0[0]:^28s}|{0[1]:^7d}\n".format(new_dict[key])
+            else:
+                outstring += "#{0[0]:^28s}|  ---  \n".format(new_dict[key])
             if key in minor_dividers:
                 outstring += "-"*37 +'\n'
         
@@ -123,6 +127,7 @@ def disp_dice(dice_vals):
     return
 
 if __name__ == "__main__":
+    from game_funcs import *
     alan_score = scorecard("Alan")
 
     print alan_score.player_name
@@ -139,4 +144,18 @@ if __name__ == "__main__":
     disp_dice([1,5,3,5,5])
 
     
+    game_info = {
+        'scorecard':scorecard('Alan'),
+        'seed':get_seed(),
+        'status':-1,
+        'to_store':True,
+        'roll':1
+        }
 
+    hand_dice = roll_dice(5)
+    disp_dice([a.number for a in  hand_dice])
+    options = score_repor(hand_dice, game_info)
+    if game_info['roll']<3:
+        options.append((999,'cont_roll','choose dice and continue rolling', -1))
+    options = dict([[a[0], a[1:]] for a in options])
+    print_options(options)

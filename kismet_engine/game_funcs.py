@@ -1,8 +1,10 @@
+import numpy as np
 import sys
 import os
-from kismet_scorecard import *
 import random as ran
 from config import *
+from kismet_scorecard import *
+
 
 def exit_game():
     """Ends the game when called"""
@@ -77,36 +79,68 @@ def run_game(game_info):
     
     while game_info['status']<0:
         raw_input("Hit enter to roll dice...")
-        roll=1
+        game_info['roll']=1
         new_hand = False
         hand_dice = roll_dice(5)
         while not new_hand:
             disp_dice([a.number for a in  hand_dice])
-            new_hand, to_keep = keep_or_score(hand_dice, roll, game_info)
-            roll +=1
+            new_hand, to_keep = keep_or_score(hand_dice, game_info)
+            game_info['roll'] +=1
             hand_dice = to_keep + roll_dice(5-len(to_keep))
         print game_info['scorecard'].print_card()
         if card_full(game_info['scorecard']):
             game_info['status']=0
     return game_info
 
-def keep_or_score(hand_dice, roll, game_info):
+def keep_or_score(hand_dice, game_info):
     """decides what the payer must do given the turn state of the game"""
     options = score_repor(hand_dice, game_info)
-    if roll<3:
-        options.append(('choose dice and continue rolling', choose_keep))
-    options = dict([a for a in enumerate(options)])
+    if game_info['roll']<3:
+        options.append((999,'cont_roll','choose dice and continue rolling', -1))
+    options = dict([[a[0], a[1:]] for a in options])
     print_options(options)
     choice = -1
     while choice not in options.keys():
+        print options.keys()
         print "What is your choice?"
-        choice = raw_input("Enter it now:")
+        try:
+            choice = int(raw_input("Enter it now:"))
+        except:
+            choice = -1
         if choice not in options.keys():
             print "Choice not recognized! Try again"
 
-    new_hand, hand_dice = option[choice][1](hand_dice, game_info)
-        
-    return True, hand_dice
+    if choice == 999:
+        new_hand=False
+        hand_dice = choose_keepdie(hand_dice)
+    else:
+        new_hand = True
+        game_info['scorecard'].update_score(options[choice][0],options[choice][2])
+    return new_hand, hand_dice
+
+def print_options(options):
+    print "options:"
+    for key in sorted(options.keys()):
+        if options[key][2]>=0:
+            print "%d: Score %d points in %s" %(key,options[key][2],options[key][1])
+        else:
+            print "%d: %s" %(key,options[key][1])
+    return
+
+def score_repor(hand_dice, game_info):
+    options = []
+    new_dict = dict([(a.rownum, (b,a.rowtext,a.rowscore, a.isscored)) for (b,a) in game_info['scorecard'].scores.items()])
+    first_zero = []
+    for key in new_dict.keys():
+        if not new_dict[key][3]:
+            score = hand_score[new_dict[key][0]](hand_dice, game_info)
+            if score >0:
+                options.append((key,new_dict[key][0],new_dict[key][1],score))
+            elif len(first_zero)==0:
+                first_zero.append((key,new_dict[key][0],new_dict[key][1],score))
+    if len(options)==0:
+        options.append(first_zero[0])
+    return options
 
 def card_full(player_card):
     """determines if a players card if full"""
