@@ -5,6 +5,13 @@
 ########################
 import numpy as np
 
+# modify np.sum to produce ints rather than int64 to
+# prevent formatting errors
+
+def alan_sum(vals):
+    return int(np.sum(vals))
+
+
 dice_vals = {'numbers':[1,2,3,4,5,6],
              'colors':['black','red','green','green','red','black']
              }
@@ -33,7 +40,7 @@ for a,b in zip(dice_vals['numbers'],dice_vals['colors']):
 
 def count_dice(hand, value):
     numbers = np.array([a.number for a in hand])
-    count = np.sum(np.where(numbers==value,1,0))
+    count = alan_sum(np.where(numbers==value,1,0))
     return count
 
 def count_ones(hand, game_info):
@@ -66,7 +73,7 @@ def three_kind(hand, game_info):
     counts, bins = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
     for count in counts:
         if count >=3:
-            score += np.sum(numbers)
+            score += alan_sum(numbers)
     return score
 
 def four_kind(hand, game_info):
@@ -75,7 +82,7 @@ def four_kind(hand, game_info):
     counts,bins = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
     for count in counts:
         if count >=4:
-            score += np.sum(numbers)+25
+            score += alan_sum(numbers)+25
     return score
 
 def kismet(hand, game_info):
@@ -84,7 +91,7 @@ def kismet(hand, game_info):
     counts,bins = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
     for count in counts:
         if count ==5:
-            score += np.sum(numbers) +50
+            score += alan_sum(numbers) +50
     return score
 
 def full_house(hand, game_info):
@@ -93,7 +100,7 @@ def full_house(hand, game_info):
     counts,bins = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
     if 3 in counts:
         if 2 in counts:
-            score += np.sum(numbers) +15
+            score += alan_sum(numbers) +15
     return score
 
 def fh_sc(hand, game_info):
@@ -103,7 +110,7 @@ def fh_sc(hand, game_info):
     if 3 in counts:
         if 2 in counts:
             if flush(hand, game_info)==35:
-                score += np.sum(numbers) +20
+                score += alan_sum(numbers) +20
     return score
 
 def flush(hand, game_info):
@@ -126,8 +133,8 @@ def tp_sc(hand, game_info):
     if (4 in col_count.values()) or (5 in col_count.values()):
         numbers = np.array([a.number for a in hand])
         counts,bins = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
-        if np.sum(np.where(counts>=2,counts, 0))>=4:
-            score += np.sum(numbers)
+        if alan_sum(np.where(counts>=2,counts, 0))>=4:
+            score += alan_sum(numbers)
     return score
         
 def top_bonus(scorecard):
@@ -145,7 +152,7 @@ def top_bonus(scorecard):
     return score
 
 def Yarborough(hand, game_info):
-    score = np.sum(np.array([a.number for a in hand]))
+    score = alan_sum(np.array([a.number for a in hand]))
     return score
     
         

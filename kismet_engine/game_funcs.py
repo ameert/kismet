@@ -1,4 +1,3 @@
-import numpy as np
 import sys
 import os
 import random as ran
@@ -34,7 +33,7 @@ Enter your choice:
 
 def start_game():
     """This function sets up game info dictionary"""
-    print "hello govnar"
+    print "Hello!"
     name = 99
     to_store = -1
     while name==99:
@@ -59,6 +58,7 @@ def start_game():
         'to_store':to_store
         }
 
+    print game_info['scorecard'].print_card()
     return game_info
 
 def get_seed():
@@ -102,7 +102,6 @@ def keep_or_score(hand_dice, game_info):
     print_options(options)
     choice = -1
     while choice not in options.keys():
-        print options.keys()
         print "What is your choice?"
         try:
             choice = int(raw_input("Enter it now:"))
