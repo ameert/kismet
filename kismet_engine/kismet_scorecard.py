@@ -115,10 +115,28 @@ diceart = """
 |  {0[5]}   {0[6]}  |   |  {1[5]}   {1[6]}  |   |  {2[5]}   {2[6]}  |   |  {3[5]}   {3[6]}  |   |  {4[5]}   {4[6]}  | 
 \_________/   \_________/   \_________/   \_________/   \_________/
 """
+def color_text(text, color):
+    colors = {'gray':30, 'red':31, 'green':32, 'yellow':33, 'blue':34,
+              'magenta':35, 'cyan':36, 'white':37, 'crimson':38,
+              'gray_back':40, 'red_back':41, 'green_back':42, 
+              'yellow_back':43, 'blue_back':44,
+              'magenta_back':45, 'cyan_back':46, 
+              'white_back':47, 'crimson_back':48}
+    return '\033[1;%dm%s\033[1;m' %(colors[color],text)
 
-dice_dots = {1:[' ',' ',' ','O',' ',' ',' '], 2:['O',' ',' ',' ',' ',' ','O'],
-             3:['O',' ',' ','O',' ',' ','O'], 4:['O','O',' ',' ',' ','O','O'],
-             5:['O','O',' ','O',' ','O','O'], 6:['O','O','O',' ','O','O','O'] }
+dice_dots = {1:[' ',' ',' ',color_text('O','gray'),' ',' ',' '], 
+             2:[color_text('O','red'),' ',' ',' ',' ',' ',
+                color_text('O','red')],
+             3:[color_text('O','green'),' ',' ',color_text('O','green'),
+                ' ',' ',color_text('O','green')], 
+             4:[color_text('O','green'),color_text('O','green'),' ',
+                ' ',' ',color_text('O','green'),color_text('O','green')],
+             5:[color_text('O','red'),color_text('O','red'),' ',
+                color_text('O','red'),' ',color_text('O','red'),
+                color_text('O','red')], 
+             6:[color_text('O','gray'),color_text('O','gray'),
+                color_text('O','gray'),' ',color_text('O','gray'),
+                color_text('O','gray'),color_text('O','gray')] }
 
 def disp_dice(dice_vals):
     print diceart.format(*[dice_dots[a] for a in dice_vals])
