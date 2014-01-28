@@ -94,7 +94,7 @@ def run_game(game_info):
     return game_info
 
 def keep_or_score(hand_dice, game_info):
-    """decides what the payer must do given the turn state of the game"""
+    """decides what the player must do given the turn state of the game"""
     options = score_repor(hand_dice, game_info)
     if game_info['roll']<3:
         options.append((999,'cont_roll','choose dice and continue rolling', -1))
