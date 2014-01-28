@@ -62,7 +62,8 @@ class scorecard():
             elif a.section == 'bottom':
                 new_bottom += a.rowscore
 
-        self.scores['top_total'].rowscore = new_top
+        self.scores['top_bonus'].rowscore = top_bonus(new_top)
+        self.scores['top_total'].rowscore = new_top+self.scores['top_bonus'].rowscore
         self.scores['bot_total'].rowscore = new_bottom
         self.scores['all_total'].rowscore = new_bottom+new_top
         
