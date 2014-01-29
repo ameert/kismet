@@ -115,7 +115,7 @@ def keep_or_score(hand_dice, game_info):
         hand_dice = choose_keepdie(hand_dice)
     else:
         new_hand = True
-        game_info['scorecard'].update_score(options[choice][0],options[choice][2])
+        game_info['scorecard'].update_score(options[choice][0],options[choice][2],game_info['roll'],[a.number for a in hand_dice])
     return new_hand, hand_dice
 
 def choose_keepdie(hand_dice):
@@ -175,7 +175,7 @@ def store_results(game_info, storefile):
     """writes the game info to a file for later analysis"""
     outfile = open(storefile, 'ab')
     new_game_info = copy.deepcopy(game_info)
-    new_game_info['scorecard'] = game_info['scorecard'].print_card()
+    new_game_info['scorecard'] = game_info['scorecard'].print_card(full_info=True)
     outfile.write(str(new_game_info)+'\n')
     outfile.close()
     return

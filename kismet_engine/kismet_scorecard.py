@@ -13,12 +13,16 @@ class row():
         self.rowscore = rowscore
         self.section = section
         self.isscored = isscored
+        self.rollnum = -1
+        self.handvals = []
         return
 
-    def score_row(self, score):
+    def score_row(self, score, roll, handvals):
         if not self.isscored:
             self.rowscore = score 
             self.isscored = True
+            self.rollnum = roll
+            self.handvals = handvals
         else:
             raise ScoreError("Row Already Scored!!!")    
         return
@@ -69,32 +73,41 @@ class scorecard():
         
         return
 
-    def print_card(self):
+    def print_card(self, full_info=False):
         minor_dividers = [6,8,17]
+        if full_info:
+            add_info = " |r|hand"
+        else:
+            add_info = ""
         outstring = """
-#####################################
+#################################################
 # KISMET SCORECARD
 # Player Name: {name}
-#####################################      
-#           Hand             | Score    
-#####################################
-""".format(name = self.player_name)
-        new_dict = dict([(a.rownum, (a.rowtext,a.rowscore,a.isscored)) for a in self.scores.values()])
-        
+#################################################      
+#           Hand             | Score{add_info}
+#################################################
+""".format(name = self.player_name, add_info=add_info)
+        new_dict = dict([(a.rownum, (a.rowtext,a.rowscore,a.isscored, a.rollnum,a.handvals )) for a in self.scores.values()])
+        if full_info:
+            strline = "#{0[0]:^28s}|{0[1]:^7d}|{0[3]:d}|{0[4]}\n"
+        else:
+            strline = "#{0[0]:^28s}|{0[1]:^7d}\n"
         for key in new_dict.keys():
             if new_dict[key][2]:
-                outstring += "#{0[0]:^28s}|{0[1]:^7d}\n".format(new_dict[key])
+                outstring += strline.format(new_dict[key])
+                if new_dict[key][3]==1 and not full_info:
+                    outstring = outstring[:-3]+'*\n'
             else:
                 outstring += "#{0[0]:^28s}|  ---  \n".format(new_dict[key])
             if key in minor_dividers:
-                outstring += "-"*37 +'\n'
+                outstring += "-"*49 +'\n'
         
-        outstring += "="*37 +'\n'
+        outstring += "="*49 +'\n'
         return outstring
     
-    def update_score(self, hand, score):
+    def update_score(self, hand, score,rollnum, handvals):
         try:
-            self.scores[hand].score_row(score)
+            self.scores[hand].score_row(score,rollnum, handvals)
             self.update_tots()
             isgood = True
         except ScoreError as e:
