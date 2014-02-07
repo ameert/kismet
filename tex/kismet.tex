@@ -1,0 +1,43 @@
+\documentclass[10pt, onecolumn]{article}
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[dvips]{graphicx}
+\usepackage{url}
+\usepackage{hyperref}
+
+%opening
+\title{Kismet Decision Engine}
+\author{Alan Meert}
+\date{7 Feb 2014}
+
+
+\begin{document}
+\maketitle
+
+The goal of the kismet decision engine is to come up with a decision process that is optimal for playing kismet. 
+In any roll, there are 252 unique dice combinations that can appear (each with different probabilities of appearing).
+The possible combinations are:
+\begin{itemize} 
+\item Group 5: 6 
+\item Group 4-1: 30 
+\item Group 3-2: 30 
+\item Group 3-1-1: 60 
+\item Group 2-2-1: 60 
+\item Group 2-1-1-1: 60 
+\item Group 1-1-1-1-1: 6 
+\end{itemize}
+where the numbers reffer to the number in each group of non-unique die. For instance, group 4-1 would be 4 of a kind in kismet. 
+One can deduce the probability of a specific die combination by considering the number of permutations of that combination available and dividing
+that by the total number of dice combinations ($6^5=7776$). So the probabilities are:
+\begin{itemize} 
+\item Group 5: P$=6*(5!/5!)/7776 \approx  0.00077$
+\item Group 4-1: P$=30*(5!/4!)/7776 \approx  0.01929$ 
+\item Group 3-2: P$=30*(!5/(2!3!))/7776 \approx  0.03858$ 
+\item Group 3-1-1: P$=60*(5!/3!)/7776 \approx 0.07716$ 
+\item Group 2-2-1: P$=60*(5!/(2!2!))/7776 \approx  0.11574$ 
+\item Group 2-1-1-1: P$=60*(5!/2!)/7776 \approx  0.23148$ 
+\item Group 1-1-1-1-1: P$=6*5!/7776 \approx  0.46296$ 
+\end{itemize}
+ 
+\end{document}
