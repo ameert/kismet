@@ -27,9 +27,9 @@ The possible combinations are:
 \item Group 2-1-1-1: 60 
 \item Group 1-1-1-1-1: 6 
 \end{itemize}
-where the numbers reffer to the number in each group of non-unique die. For instance, group 4-1 would be 4 of a kind in kismet. 
-One can deduce the probability of a specific die combination by considering the number of permutations of that combination available and dividing
-that by the total number of dice combinations ($6^5=7776$). So the probabilities are:
+where the numbers refer to the number in each group of non-unique die. For instance, group 4-1 would be 4 of a kind in Kismet. 
+One can deduce the probability of a specific die combination by considering the number of unique permutations of that 
+combination available and dividing that by the total number of dice combinations ($6^5=7776$). So the probabilities are:
 \begin{itemize} 
 \item Group 5: P$=6*(5!/5!)/7776 \approx  0.00077$
 \item Group 4-1: P$=30*(5!/4!)/7776 \approx  0.01929$ 
@@ -40,4 +40,19 @@ that by the total number of dice combinations ($6^5=7776$). So the probabilities
 \item Group 1-1-1-1-1: P$=6*5!/7776 \approx  0.46296$ 
 \end{itemize}
  
+In addition to the 252 unique dice combinations, after each roll, the player can choose to keep between 0 and 5 dice and reroll. 
+For each dice combination, this gives at most $1+5+10+10+5+1=32$ options at each turn, one of which is to score the dice on the card.
+However, many of these choices are not unique. Choices to keep or discard dice also cause different hands to ``converge'' to the same
+hand going forward. After accounting for the non-unique combinations, there are 210 combinations that continue the hand 
+(i.e. at least on die is dicarded and rerolled). There are then an additional 252 combinations that stop the hand and score. 
+
+After each roll, the task for the computer is then to decide among several options:
+\begin{enumerate}
+ \item keep between 0 and 4 dice
+ \item stop the hand and score
+\end{enumerate}
+
+If the algorithm decides to stop, then it must also decide what to score the hand as. This should also be a consideration of the
+algorithm when deciding how to move forward in the hand.
+
 \end{document}

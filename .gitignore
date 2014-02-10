@@ -1,2 +1,9 @@
 *~
 *.pyc
+*.aux
+*.dvi
+*.log
+*.out
+*.pdf
+*.ps
+*.tex.backup
