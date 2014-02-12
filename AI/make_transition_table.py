@@ -73,22 +73,7 @@ def get_prob(a, b):
 
     return prob
 
-
-dice_combos_out = []
-for a in range(1,7):
-    for b in range(1,7):
-        if b>=a:
-            for c in range(1,7):
-                if c>=b:
-                    for d in range(1,7):
-                        if d>=c:
-                            for e in range(1,7):
-                                if e>=d:
-                                    dice_combos_out.append([a,b,c,d,e])
-
-dice_combos_out = np.array(dice_combos_out)
-
-dice_combos_in = []
+dice_combos = []
 for a in range(0,7):
     for b in range(0,7):
         if b>=a:
@@ -98,25 +83,52 @@ for a in range(0,7):
                         if d>=c:
                             for e in range(0,7):
                                 if e>=d:# if 0 in [a,b,c,d,e]:
-                                    dice_combos_in.append([a,b,c,d,e])
+                                    dice_combos.append([a,b,c,d,e])
 
-dice_combos_in = np.array(dice_combos_in)
+dice_combos = np.array(dice_combos)
 
-transition_matrix = np.zeros((dice_combos_in.shape[0], dice_combos_out.shape[0]))-1
+transition_matrix = np.zeros((dice_combos.shape[0], dice_combos.shape[0]))-1
 
-for row,a in enumerate(dice_combos_in):
-    for col, b in enumerate(dice_combos_out):
-        transition_matrix[row,col] = get_prob(a,b)
-        
-#print transition_matrix[0:5,0:5]
-#print transition_matrix[35:40,35:40]
+for row,a in enumerate(dice_combos):
+    for col, b in enumerate(dice_combos):
+        if 0 in b:
+            transition_matrix[row,col] = 0.0
+        else:
+            transition_matrix[row,col] = get_prob(a,b)
 
-#print len(np.where(transition_matrix>0)[0])
-#print np.sum(transition_matrix, axis =1)
+print transition_matrix.shape        
+print transition_matrix[0:5,0:5]
+print transition_matrix[:35,350:]
+
+print len(np.where(transition_matrix>0)[0])
+print np.sum(transition_matrix, axis =1)
 
 class score_array():
-    def __init__(self, hand_name):
-        self.hand_name = hand_name
-        self.roll1_score = [hand_score(a,{'roll':1}) for a in dice_combos_out]
-        self.roll23_score = [hand_score(a,{'roll':2}) for a in dice_combos_out]
+    def __init__(self):
+        self.hands = ['ones','twos','threes','fours','fives','sixes',
+                      'tp_sc','three_kind','straight','flush','full_house',
+                      'fh_sc','four_kind','scar','kismet']
+        
+        self.roll1_score = np.zeros((dice_combos.shape[0],len(self.hands)))
+        self.roll23_score = np.zeros((dice_combos.shape[0],len(self.hands)))
 
+
+        for col, handname in enumerate(self.hands):
+            for row, outhand in enumerate(dice_combos):
+                if 0 in outhand:
+                    self.roll1_score[row,col] = 0.0
+                    self.roll23_score[row,col] = 0.0
+                else:
+                    outhand_d = [ dice_set[a-1] for a in outhand]
+                    self.roll1_score[row,col] = hand_score[handname](outhand_d,{'roll':1})
+                    self.roll23_score[row,col] = hand_score[handname](outhand_d,{'roll':2})
+
+
+test_score = score_array()
+
+print test_score.roll1_score.shape
+print test_score.roll23_score.shape
+print test_score.roll1_score
+print test_score.roll23_score
+print test_score.roll1_score[:,:6]
+print test_score.roll23_score[:,:6]
