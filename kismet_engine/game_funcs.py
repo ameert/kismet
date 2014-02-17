@@ -4,7 +4,8 @@ import random as ran
 import copy
 from config import *
 from kismet_scorecard import *
-
+import time
+from simulate_game import  AI_keep_or_score, AI_choose_keepdie
 
 def exit_game():
     """Ends the game when called"""
@@ -51,14 +52,34 @@ def start_game():
             print "improper entry! try again!"
             to_store = -1
 
-    game_info = {
-        'scorecard':scorecard(name),
-        'seed':get_seed(),
-        'status':-1,
-        'to_store':to_store
-        }
+    game_info = {'seed':get_seed(),'to_store':to_store,'status':-1,
+                 'player_names':[name,],
+                 name:{
+            'scorecard':scorecard(name),
+            'computer_player':False}
+                 }
 
-    print game_info['scorecard'].print_card()
+    while 1:
+        try:
+            with_computer = raw_input("Play against the computer?(yes or no):")
+        except:
+            with_computer = -1
+        if with_computer =='yes':
+            with_computer = True
+            break
+        elif with_computer == 'no':
+            with_computer = False
+            break
+        else:
+            print "improper entry! Please enter 'yes' or 'no'. Try again!"
+        
+    if with_computer:
+        game_info['Computer'] = {
+        'scorecard':scorecard('Computer'),
+        'computer_player':True}
+        game_info['player_names'].append('Computer')
+    for key in game_info['player_names']:
+        print game_info[key]['scorecard'].print_card()
     return game_info
 
 def get_seed():
@@ -79,17 +100,24 @@ def run_game(game_info):
     ran.seed(game_info['seed'])
     
     while game_info['status']<0:
-        raw_input("Hit enter to roll dice...")
-        game_info['roll']=1
-        new_hand = False
-        hand_dice = roll_dice(5)
-        while not new_hand:
-            disp_dice([a.number for a in  hand_dice])
-            new_hand, to_keep = keep_or_score(hand_dice, game_info)
-            game_info['roll'] +=1
-            hand_dice = to_keep + roll_dice(5-len(to_keep))
-        print game_info['scorecard'].print_card()
-        if card_full(game_info['scorecard']):
+        for name in game_info['player_names']:
+            if not game_info[name]['computer_player']:
+                raw_input("Hit enter to roll dice...")
+            game_info[name]['roll']=1
+            new_hand = False
+            hand_dice = roll_dice(5)
+            while not new_hand:
+                disp_dice([a.number for a in  hand_dice])
+                if not game_info[name]['computer_player']:
+                    new_hand, to_keep = keep_or_score(hand_dice, game_info[name])
+                else:
+                    new_hand, to_keep = AI_keep_or_score(hand_dice, game_info[name])                   
+                    time.sleep(1)
+                game_info[name]['roll'] +=1
+                hand_dice = to_keep + roll_dice(5-len(to_keep))
+            print game_info[name]['scorecard'].print_card()
+        card_check = np.array([1 if card_full(game_info[name]['scorecard']) else 0 for name in game_info['player_names']])
+        if np.sum(card_check) == len(game_info['player_names']):
             game_info['status']=0
     return game_info
 
@@ -175,14 +203,17 @@ def store_results(game_info, storefile):
     """writes the game info to a file for later analysis"""
     outfile = open(storefile, 'ab')
     new_game_info = copy.deepcopy(game_info)
-    new_game_info['scorecard'] = game_info['scorecard'].print_card(full_info=True)
+    for name in new_game_info['player_names']:
+        new_game_info[name]['scorecard'] = game_info[name]['scorecard'].print_card(full_info=True)
     outfile.write(str(new_game_info)+'\n')
     outfile.close()
     return
 
 def end_game(game_info):
     """prints end of game info and scorecard"""
-    print game_info['scorecard'].print_card()
+    for name in game_info['player_names']:
+        print game_info[name]['scorecard'].print_card()
     print "game seed:", game_info['seed']
     print "game over!!!"
     return
+
