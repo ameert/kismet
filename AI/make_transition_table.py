@@ -26,6 +26,9 @@ import sys
 sys.path.append('../kismet_engine/')
 
 from config import *
+from kismet_scorecard import *
+
+scorecard = scorecard('test')
 
 def get_prob(a, b):
     """Returns the probability of starting with dice combination a 
@@ -124,6 +127,12 @@ class score_array():
                     self.roll23_score[row,col] = hand_score[handname](outhand_d,{'roll':2})
 
 
+    def update_open_scores(self, scorecard):
+        self.open_scores = [0 if scorecard.scores[hand].isscored else 1 for hand in self.hands]
+        print self.open_scores
+        return self.open_scores
+
+
 test_score = score_array()
 
 print test_score.roll1_score.shape
@@ -132,3 +141,5 @@ print test_score.roll1_score
 print test_score.roll23_score
 print test_score.roll1_score[:,:6]
 print test_score.roll23_score[:,:6]
+test_score.update_open_scores(scorecard)
+
