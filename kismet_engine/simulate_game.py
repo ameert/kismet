@@ -7,6 +7,9 @@ from config import *
 from kismet_scorecard import *
 import time
 
+sys.path.append('../AI/')
+from make_transition_table import *
+
 def AI_keep_or_score(hand_dice, game_info):
     """decides what the payer must do given the turn state of the game"""
     from game_funcs import score_repor, print_options
@@ -15,25 +18,13 @@ def AI_keep_or_score(hand_dice, game_info):
         options.append((999,'cont_roll','choose dice and continue rolling', -1))
     options = dict([[a[0], a[1:]] for a in options])
     print_options(options)    
-    for count in [17,15,14,13,12,11]:
-        if count in options.keys():
-            if options[count][2]>0:
-                choice = count
-                break
-    else:
-        if 999 in options.keys():
-            choice = 999
-        else: 
-            best = (-1,-1)
-            for a in options.items():
-                if a[1][2] > best[1]:
-                    best = (a[0], a[1][2])
-            choice = best[0]
-
+    
+    print options, game_info['scorecard'],game_info['roll'], hand_dice
+    choice, hand_dice = AI_choose_option(options, game_info['scorecard'],game_info['roll'], hand_dice)
+    print choice
     print "i choose %d" %choice
     if choice == 999:
         new_hand=False
-        hand_dice = AI_choose_keepdie(hand_dice)
     else:
         new_hand = True
         game_info['scorecard'].update_score(options[choice][0],options[choice][2], game_info['roll'], hand_dice)
