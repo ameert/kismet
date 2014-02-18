@@ -69,7 +69,7 @@ class scorecard():
         self.scores['top_bonus'].rowscore = top_bonus(new_top)
         self.scores['top_total'].rowscore = new_top+self.scores['top_bonus'].rowscore
         self.scores['bot_total'].rowscore = new_bottom
-        self.scores['all_total'].rowscore = new_bottom+new_top
+        self.scores['all_total'].rowscore =  self.scores['bot_total'].rowscore+self.scores['top_total'].rowscore
         
         return
 
@@ -87,7 +87,7 @@ class scorecard():
 #           Hand             | Score{add_info}
 #################################################
 """.format(name = self.player_name, add_info=add_info)
-        new_dict = dict([(a.rownum, (a.rowtext,a.rowscore,a.isscored, a.rollnum,a.handvals )) for a in self.scores.values()])
+        new_dict = dict([(a.rownum, (a.rowtext,a.rowscore,a.isscored, a.rollnum,a.handvals)) for a in self.scores.values()])
         if full_info:
             strline = "#{0[0]:^28s}|{0[1]:^7d}|{0[3]:d}|{0[4]}\n"
         else:

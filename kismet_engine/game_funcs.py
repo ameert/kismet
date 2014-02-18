@@ -5,7 +5,7 @@ import copy
 from config import *
 from kismet_scorecard import *
 import time
-from simulate_game import  AI_keep_or_score, AI_choose_keepdie
+from simulate_game import  AI_keep_or_score
 
 def exit_game():
     """Ends the game when called"""
@@ -84,10 +84,10 @@ def start_game():
 
 def get_seed():
     """Pulls a seed value for the ranom number generator from the os"""
-    seed_size = 42 # number of random bits to pull 
-    newseed =os.urandom(seed_size)
+    max_seed = 2**50 # number of random bits to pull 
+    newseed =ran.SystemRandom().randint(0,max_seed)
     return newseed
-
+ 
 def roll_dice(num_to_roll):
     """returns a specified number of dice, up to 5"""
     new_dice = []
@@ -102,6 +102,7 @@ def run_game(game_info):
     while game_info['status']<0:
         for name in game_info['player_names']:
             if not game_info[name]['computer_player']:
+                print game_info[name]['scorecard'].print_card()
                 raw_input("Hit enter to roll dice...")
             game_info[name]['roll']=1
             new_hand = False

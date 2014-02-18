@@ -19,24 +19,14 @@ def AI_keep_or_score(hand_dice, game_info):
     options = dict([[a[0], a[1:]] for a in options])
     print_options(options)    
     
-    print options, game_info['scorecard'],game_info['roll'], hand_dice
     choice, hand_dice = AI_choose_option(options, game_info['scorecard'],game_info['roll'], hand_dice)
-    print choice
-    print "i choose %d" %choice
+    print "Computer chooses %d" %choice
     if choice == 999:
         new_hand=False
     else:
         new_hand = True
         game_info['scorecard'].update_score(options[choice][0],options[choice][2], game_info['roll'], hand_dice)
     return new_hand, hand_dice
-
-def AI_choose_keepdie(hand_dice):
-    letters = ['a','b','c','d','e']
-    dice_dict = dict(zip(letters,hand_dice))
-    to_keep = ['a','b','c']
-    
-    return [dice_dict[key] for key in to_keep]
-
 
 if __name__ == "__main__":
     game_info = {

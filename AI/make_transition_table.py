@@ -99,12 +99,12 @@ for row,a in enumerate(dice_combos):
         else:
             transition_matrix[row,col] = get_prob(a,b)
 
-print transition_matrix.shape        
-print transition_matrix[0:5,0:5]
-print transition_matrix[:35,350:]
+#print transition_matrix.shape        
+#print transition_matrix[0:5,0:5]
+#print transition_matrix[:35,350:]
 
-print len(np.where(transition_matrix>0)[0])
-print np.sum(transition_matrix, axis =1)
+#print len(np.where(transition_matrix>0)[0])
+#print np.sum(transition_matrix, axis =1)
 
 class score_array():
     def __init__(self):
@@ -129,7 +129,7 @@ class score_array():
 
     def update_open_scores(self, scorecard):
         self.open_scores = [0 if scorecard.scores[hand].isscored else 1 for hand in self.hands]
-        print self.open_scores
+        #print self.open_scores
         return self.open_scores
 
 
@@ -161,13 +161,14 @@ def AI_choose_option(options, scorecard, rollnum, hand_dice):
             hand = [a.number for a in hand_dice]
             choice_arr =choice_hands(hand, rollnum) 
             curr_trans_arr = (choice_arr*transition_matrix.T).T
-            future_score = curr_trans_arr*test_score.roll23_score
+            future_score = np.array(curr_trans_arr*test_score.roll23_score)*np.array(test_score.open_scores)
             future_choice = np.sum(future_score, axis =1)
             best_hand = np.where(future_choice == np.max(future_choice))[0]
-            best_hand = dice_combos[best_hand]
+            best_hand = np.array(dice_combos[best_hand]).flatten()
             hand_dice_copy = [a for a in hand_dice]
+            print 'best_hand ',best_hand
             for a in best_hand:
-                for count, b in hand_dice_copy:
+                for count, b in enumerate(hand_dice_copy):
                     if a == b.number:
                         out_dice.append(hand_dice_copy.pop(count))
                         break
