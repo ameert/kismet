@@ -8,7 +8,7 @@ from kismet_scorecard import *
 import time
 
 sys.path.append('../AI/')
-from make_transition_table import *
+from AI_shell import *
 
 def AI_keep_or_score(hand_dice, game_info):
     """decides what the payer must do given the turn state of the game"""
