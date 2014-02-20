@@ -54,25 +54,25 @@ class score_array():
         
         top_score = scorecard.scores['top_total'].rowscore- scorecard.scores['top_bonus'].rowscore
 
-        #average_top_score = self.score_adjust*3.*np.arange(1,self.score_adjust.shape[1]+1) # 3 of each dice
-        #print average_top_score
+        average_top_score = np.array(self.score_adjust)*3.*np.arange(1,self.score_adjust.shape[1]+1) # 3 of each dice
+        
         if top_score<63:
-            a = self.bonus_adjust/(63.-top_score)
+            a = (self.bonus_adjust-average_top_score)/(63.-top_score)
             a = np.where(a>1., 1., a)
         else:
             a = 0*self.bonus_adjust
         if top_score<71:
-            b = self.bonus_adjust/(71.-top_score)
+            b = (self.bonus_adjust-average_top_score)/(71.-top_score)
             b = np.where(b>1., 1., a)
         else:
             b = 0*self.bonus_adjust
         if top_score<78:
-            c = self.bonus_adjust/(78.-top_score)
+            c = (self.bonus_adjust-average_top_score)/(78.-top_score)
             c = np.where(c>1., 1., a)
         else:
             c = 0*self.bonus_adjust
        
-        self.bonus_adjust = (a*35 + b*(55-35) +c*(75-55))#-average_top_score*75.0/78.0*np.array(self.score_adjust)
+        self.bonus_adjust = (a*35 + b*(55-35) +c*(75-55))
 
         return self.open_scores, self.bonus_adjust
 
