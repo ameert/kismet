@@ -136,6 +136,9 @@ def AI_choose_option(options, scorecard, rollnum, hand_dice):
     else: # if there is only one choice
         choice = options.keys()[0]
 
+    if choice not in options.keys():
+        print "bad choice, %d\nchoosing %d instead" %(choice, options.keys()[0])
+        choice = options.keys()[0]
     return choice, out_dice
 
 
