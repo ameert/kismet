@@ -41,8 +41,12 @@ class score_array():
                     self.roll1_score[row,col] = hand_score[handname](outhand_d,{'roll':1})
                     self.roll23_score[row,col] = hand_score[handname](outhand_d,{'roll':2})
                     if handname in ['ones','twos','threes','fours','fives','sixes']:
-                        self.score_adjust[row,col] =1 
-                        
+                        self.score_adjust[row,col] =1
+                    #penalize yarboroughto prevent taking it too early
+                    if handname in ['scar']:
+                        self.roll1_score[row,col] *= 0.25
+                        self.roll23_score[row,col] *= 0.75  
+        return
         
 
     def update_open_scores(self, scorecard, rollnum):
@@ -114,12 +118,15 @@ def AI_choose_option(options, scorecard, rollnum, hand_dice):
         if 999 in options.keys():
             choice_arr =choice_hands(hand, rollnum) 
             curr_trans_arr = (choice_arr*transition_matrix.T).T
-            future_all_score = np.array(curr_trans_arr*test_score.roll23_score)*np.array(test_score.open_scores)
+            if rollnum==1:
+                future_all_score = np.array((curr_trans_arr+(1.0-curr_trans_arr)*curr_trans_arr)*test_score.roll23_score)*np.array(test_score.open_scores)
+            else:
+                future_all_score = np.array(curr_trans_arr*test_score.roll23_score)*np.array(test_score.open_scores)
             future_score = np.sum(future_all_score, axis =1)
             future_choice = np.where(future_score == np.max(future_score))[0]
             future_score = np.max(future_all_score[future_choice])
             future_all_score[future_choice]
-            print 'future ',future_choice, future_score
+            print 'future ',future_choice, dice_combos[future_choice], future_score
 
             if future_score>stop_score:
                 out_dice = []

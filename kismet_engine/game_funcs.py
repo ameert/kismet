@@ -5,7 +5,10 @@ import copy
 from config import *
 from kismet_scorecard import *
 import time
-from simulate_game import  AI_keep_or_score
+try:
+    from simulate_game import  AI_keep_or_score
+except ImportError:
+    print "cannot import AI!!!!"
 
 def exit_game():
     """Ends the game when called"""
@@ -78,9 +81,18 @@ def start_game():
         'scorecard':scorecard('Computer'),
         'computer_player':True}
         game_info['player_names'].append('Computer')
-    for key in game_info['player_names']:
-        print game_info[key]['scorecard'].print_card()
+    
+    print_cards_all(game_info)
     return game_info
+
+def print_cards_all(game_info):
+    cards = []
+    for key in game_info['player_names']:
+        cards.append(game_info[key]['scorecard'].print_card())
+    cards = [a.split('\n') for a in cards]
+    for line in zip(*cards):
+        print "{line1:<50s}{line2:<50s}".format(line1=line[0], line2=line[1])
+    return 
 
 def get_seed():
     """Pulls a seed value for the ranom number generator from the os"""
@@ -101,22 +113,21 @@ def run_game(game_info):
     
     while game_info['status']<0:
         for name in game_info['player_names']:
+            print_cards_all(game_info)
             if not game_info[name]['computer_player']:
-                print game_info[name]['scorecard'].print_card()
                 raw_input("Hit enter to roll dice...")
             game_info[name]['roll']=1
             new_hand = False
             hand_dice = roll_dice(5)
             while not new_hand:
-                disp_dice([a.number for a in  hand_dice])
                 if not game_info[name]['computer_player']:
                     new_hand, to_keep = keep_or_score(hand_dice, game_info[name])
                 else:
+                    disp_dice([a.number for a in  hand_dice])
                     new_hand, to_keep = AI_keep_or_score(hand_dice, game_info[name])                   
                     time.sleep(1)
                 game_info[name]['roll'] +=1
-                hand_dice = to_keep + roll_dice(5-len(to_keep))
-            print game_info[name]['scorecard'].print_card()
+                hand_dice = to_keep + roll_dice(5-len(to_keep))            
         card_check = np.array([1 if card_full(game_info[name]['scorecard']) else 0 for name in game_info['player_names']])
         if np.sum(card_check) == len(game_info['player_names']):
             game_info['status']=0
@@ -127,24 +138,35 @@ def keep_or_score(hand_dice, game_info):
     options = score_repor(hand_dice, game_info)
     if game_info['roll']<3:
         options.append((999,'cont_roll','choose dice and continue rolling', -1))
+    options.append((888,'print_card','print your score card', -1))
     options = dict([[a[0], a[1:]] for a in options])
-    print_options(options)
-    choice = -1
-    while choice not in options.keys():
-        print "What is your choice?"
-        try:
-            choice = int(raw_input("Enter it now:"))
-        except:
-            choice = -1
-        if choice not in options.keys():
-            print "Choice not recognized! Try again"
+    OK = False
+    while not OK:
+        choice = -1
+        while choice not in options.keys():
+            disp_dice([a.number for a in  hand_dice])
+            print_options(options)
+            print "What is your choice?"
+            try:
+                choice = int(raw_input("Enter it now:"))
+            except:
+                choice = -1
+            if choice not in options.keys():
+                print "Choice not recognized! Try again"
+            if choice == 888:
+                print game_info['scorecard'].print_card()
+                raw_input("Hit enter to continue")
+                choice = -1
 
-    if choice == 999:
-        new_hand=False
-        hand_dice = choose_keepdie(hand_dice)
-    else:
-        new_hand = True
-        game_info['scorecard'].update_score(options[choice][0],options[choice][2],game_info['roll'],[a.number for a in hand_dice])
+        if choice == 999:
+            new_hand=False
+            hand_dice, OK = choose_keepdie(hand_dice)
+            if not OK:
+                choice = -1
+        else:
+            OK=True
+            new_hand = True
+            game_info['scorecard'].update_score(options[choice][0],options[choice][2],game_info['roll'],[a.number for a in hand_dice])
     return new_hand, hand_dice
 
 def choose_keepdie(hand_dice):
@@ -153,19 +175,18 @@ def choose_keepdie(hand_dice):
     print "Which dice would you like to keep?"
     for let in letters:
         print "%s) number: %d color:%s" %(let, dice_dict[let].number,dice_dict[let].color)
-    while (1):
-        choice = raw_input("Enter your choices (%s):" %','.join(letters))
-        to_keep = []
-        for a in choice:
-            if a in letters:
-                to_keep.append(a)
-        print "keep these: %s" %','.join(to_keep)
-        good = True
-        if raw_input("Enter choice [Y]/n:")=='n':
-                good = False
-        if good:
-            break
-    return [dice_dict[key] for key in to_keep]
+    choice = raw_input("Enter your choices (%s):" %','.join(letters))
+    to_keep = []
+    for a in choice:
+        if a in letters and a not in to_keep:
+            to_keep.append(a)
+    print "keep these: %s" %','.join(to_keep)
+    if raw_input("Enter choice [Y]/n:")=='n':
+        OK = False
+        to_keep = letters
+    else:
+        OK = True
+    return [dice_dict[key] for key in to_keep], OK
             
 
 def print_options(options):
@@ -212,8 +233,7 @@ def store_results(game_info, storefile):
 
 def end_game(game_info):
     """prints end of game info and scorecard"""
-    for name in game_info['player_names']:
-        print game_info[name]['scorecard'].print_card()
+    print_cards_all(game_info)
     print "game seed:", game_info['seed']
     print "game over!!!"
     return

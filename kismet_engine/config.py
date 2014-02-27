@@ -146,7 +146,7 @@ def fh_sc(hand, game_info):
     counts,bins = np.histogram(numbers, bins = np.arange(-0.5, 6.51,1.0))
     if 3 in counts:
         if 2 in counts:
-            if flush(hand, game_info)==35:
+            if flush(hand, game_info)>=35:
                 score += alan_sum(numbers) 
     if game_info['roll']==1:
         score *= first_roll_multiplier

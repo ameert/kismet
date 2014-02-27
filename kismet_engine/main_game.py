@@ -3,7 +3,7 @@ import sys
 
 sys.path.append("/home/ameert/git_projects/kismet/kismet_engine'")
 
-storefile = '/home/ameert/git_projects/kismet/data/game_records.dat'
+storefile = '../data/game_records.dat'
 
 while (1):
     choice = welcome()
