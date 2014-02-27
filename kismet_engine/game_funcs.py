@@ -89,9 +89,12 @@ def print_cards_all(game_info):
     cards = []
     for key in game_info['player_names']:
         cards.append(game_info[key]['scorecard'].print_card())
-    cards = [a.split('\n') for a in cards]
-    for line in zip(*cards):
-        print "{line1:<50s}{line2:<50s}".format(line1=line[0], line2=line[1])
+    if len(game_info['player_names'])==1:
+        print cards[0]
+    else:
+        cards = [a.split('\n') for a in cards]
+        for line in zip(*cards):
+            print "{line1:<50s}{line2:<50s}".format(line1=line[0], line2=line[1])
     return 
 
 def get_seed():
