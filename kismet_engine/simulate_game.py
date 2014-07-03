@@ -33,7 +33,7 @@ if __name__ == "__main__":
         'scorecard':scorecard("computer"),
         'seed':get_seed(),
         'status':-1,
-        'to_store':1
+        'to_store':0
         }
 
     storefile =  '/home/ameert/git_projects/kismet/data/computer_records.dat'
