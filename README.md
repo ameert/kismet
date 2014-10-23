@@ -1,3 +1,5 @@
+# Kismet
+
 This project contains the code for Kismet gameplay. 
 There is code available to simulate a single-player
 kismet game with the computer, or to play human vs. 
